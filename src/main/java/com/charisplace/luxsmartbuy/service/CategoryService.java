@@ -16,4 +16,5 @@ public interface CategoryService {
     Optional<Category> readCategory(Long categoryId);
 
     void updateCategory(Long categoryID, Category newCategory);
+
 }
