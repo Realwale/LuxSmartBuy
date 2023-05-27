@@ -12,4 +12,5 @@ public class ExceptionControllerAdvice {
     public final ResponseEntity<String> handleUpdateFailException(CustomException customException){
         return new ResponseEntity<>(customException.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
 }
