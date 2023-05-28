@@ -1,7 +1,9 @@
 package com.charisplace.luxsmartbuy.controller;
 
+import com.charisplace.luxsmartbuy.dto.users.SignInDTO;
 import com.charisplace.luxsmartbuy.dto.users.SignUpResponseDTO;
 import com.charisplace.luxsmartbuy.dto.users.SignupDTO;
+import com.charisplace.luxsmartbuy.exceptions.AuthenticationFailException;
 import com.charisplace.luxsmartbuy.exceptions.CustomException;
 import com.charisplace.luxsmartbuy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +22,10 @@ public class UserController {
     @PostMapping("/signup")
     public SignUpResponseDTO Signup(@RequestBody SignupDTO signupDTO) throws CustomException {
         return userService.signUp(signupDTO);
+    }
+
+    @PostMapping("/signIn")
+    public SignUpResponseDTO Signup(@RequestBody SignInDTO signInDTO) throws CustomException, AuthenticationFailException {
+        return userService.signIn(signInDTO);
     }
 }

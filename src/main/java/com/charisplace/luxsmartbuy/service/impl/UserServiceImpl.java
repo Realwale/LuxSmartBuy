@@ -1,7 +1,10 @@
 package com.charisplace.luxsmartbuy.service.impl;
 
+import com.charisplace.luxsmartbuy.config.MessageStrings;
+import com.charisplace.luxsmartbuy.dto.users.SignInDTO;
 import com.charisplace.luxsmartbuy.dto.users.SignUpResponseDTO;
 import com.charisplace.luxsmartbuy.dto.users.SignupDTO;
+import com.charisplace.luxsmartbuy.exceptions.AuthenticationFailException;
 import com.charisplace.luxsmartbuy.exceptions.CustomException;
 import com.charisplace.luxsmartbuy.model.AuthenticationToken;
 import com.charisplace.luxsmartbuy.model.User;
@@ -58,11 +61,39 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public SignUpResponseDTO signIn(SignInDTO signInDTO) throws AuthenticationFailException, CustomException {
+
+        User user = userRepository.findByEmail(signInDTO.getEmail());
+
+        if (!Objects.nonNull(user)){
+            throw new AuthenticationFailException("User not present");
+        }
+        try{
+
+            if (!user.getPassword().equals(hashPassword(signInDTO.getPassword()))){
+                throw new AuthenticationFailException(MessageStrings.WRONG_PASSWORD);
+            }
+        }catch (NoSuchAlgorithmException e){
+            e.printStackTrace();
+            logger.error("hashing password failed {}", e.getMessage());
+            throw new CustomException(e.getMessage());
+        }
+
+        AuthenticationToken token = authenticationService.getToken(user);
+
+        if (!Objects.nonNull(token)){
+            throw new CustomException(MessageStrings.AUTH_TOEKN_NOT_PRESENT);
+        }
+
+        return new SignUpResponseDTO("success", token.getToken());
+    }
+
     private String hashPassword(String password) throws NoSuchAlgorithmException{
         MessageDigest messageDigest = MessageDigest.getInstance("MD5");
         messageDigest.update(password.getBytes());
         byte[] digest = messageDigest.digest();
-        String myHash = DatatypeConverter.printHexBinary(digest).toUpperCase();
-        return myHash;
+        return DatatypeConverter.printHexBinary(digest).toUpperCase();
+
     }
 }
