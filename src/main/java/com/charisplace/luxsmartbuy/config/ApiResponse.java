@@ -2,7 +2,6 @@ package com.charisplace.luxsmartbuy.config;
 
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 

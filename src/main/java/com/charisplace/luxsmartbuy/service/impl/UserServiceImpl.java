@@ -3,8 +3,10 @@ package com.charisplace.luxsmartbuy.service.impl;
 import com.charisplace.luxsmartbuy.dto.users.SignUpResponseDTO;
 import com.charisplace.luxsmartbuy.dto.users.SignupDTO;
 import com.charisplace.luxsmartbuy.exceptions.CustomException;
+import com.charisplace.luxsmartbuy.model.AuthenticationToken;
 import com.charisplace.luxsmartbuy.model.User;
 import com.charisplace.luxsmartbuy.repository.UserRepository;
+import com.charisplace.luxsmartbuy.service.AuthenticationService;
 import com.charisplace.luxsmartbuy.service.UserService;
 import jakarta.xml.bind.DatatypeConverter;
 import org.slf4j.Logger;
@@ -21,6 +23,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    AuthenticationService authenticationService;
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
@@ -42,6 +47,10 @@ public class UserServiceImpl implements UserService {
         User user = new User(signupDTO.getFirstName(), signupDTO.getLastName(), signupDTO.getEmail(), encryptedPassword);
         try{
             userRepository.save(user);
+
+            final AuthenticationToken authenticationToken = new AuthenticationToken(user);
+
+            authenticationService.saveConfirmationToken(authenticationToken);
 
             return new SignUpResponseDTO("success", "User created successfully");
         } catch (Exception e){
