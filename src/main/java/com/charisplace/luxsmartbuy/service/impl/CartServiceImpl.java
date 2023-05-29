@@ -3,6 +3,7 @@ package com.charisplace.luxsmartbuy.service.impl;
 import com.charisplace.luxsmartbuy.dto.AddToCartDTO;
 import com.charisplace.luxsmartbuy.dto.CartDTO;
 import com.charisplace.luxsmartbuy.dto.CartItemDTO;
+import com.charisplace.luxsmartbuy.exceptions.CartItemNotExistException;
 import com.charisplace.luxsmartbuy.model.Cart;
 import com.charisplace.luxsmartbuy.model.Product;
 import com.charisplace.luxsmartbuy.model.User;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -50,4 +52,21 @@ public class CartServiceImpl implements CartService {
 
         return new CartDTO(cartItemDTOS, totalCost);
     }
-}
+
+    @Override
+    public void deleteCartItem(Long cartItemId, User user) throws CartItemNotExistException {
+
+        Optional<Cart> optionalCart = cartRepository.findById(cartItemId);
+
+        if (optionalCart.isEmpty()) {
+            throw new CartItemNotExistException("Cart item id not valid");
+        }
+            Cart cart = optionalCart.get();
+
+            if (cart.getUser() != user){
+                throw new CartItemNotExistException("Cart item does not belong to user");
+            }
+
+            cartRepository.deleteById(cartItemId);
+        }
+    }

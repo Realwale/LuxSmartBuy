@@ -4,6 +4,7 @@ import com.charisplace.luxsmartbuy.config.ApiResponse;
 import com.charisplace.luxsmartbuy.dto.AddToCartDTO;
 import com.charisplace.luxsmartbuy.dto.CartDTO;
 import com.charisplace.luxsmartbuy.exceptions.AuthenticationFailException;
+import com.charisplace.luxsmartbuy.exceptions.CartItemNotExistException;
 import com.charisplace.luxsmartbuy.exceptions.ProductNotExistException;
 import com.charisplace.luxsmartbuy.model.Product;
 import com.charisplace.luxsmartbuy.model.User;
@@ -52,5 +53,17 @@ public class CartController {
         CartDTO cartDTO = cartService.listCartItems(user);
 
         return new ResponseEntity<>(cartDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{cartItemId}")
+    public ResponseEntity<ApiResponse> deleteCartItem(@PathVariable("cartItemId") Long cartItemId, @RequestParam("token") String token) throws AuthenticationFailException, CartItemNotExistException {
+
+        authenticationService.authenticate(token);
+
+        User user = authenticationService.getUser(token);
+
+        cartService.deleteCartItem(cartItemId, user);
+
+        return new ResponseEntity<>(new ApiResponse(true, "Item removed successfully"), HttpStatus.OK);
     }
 }
