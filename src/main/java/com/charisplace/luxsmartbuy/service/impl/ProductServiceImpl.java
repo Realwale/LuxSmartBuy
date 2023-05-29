@@ -1,6 +1,7 @@
 package com.charisplace.luxsmartbuy.service.impl;
 
 import com.charisplace.luxsmartbuy.dto.ProductDTO;
+import com.charisplace.luxsmartbuy.exceptions.ProductNotExistException;
 import com.charisplace.luxsmartbuy.model.Category;
 import com.charisplace.luxsmartbuy.model.Product;
 import com.charisplace.luxsmartbuy.repository.ProductRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -43,6 +45,17 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.save(product);
     }
+
+    @Override
+    public Product getProductById(Long productId) throws ProductNotExistException {
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+
+        if(!optionalProduct.isPresent())
+            throw new ProductNotExistException("Product id is invalid " + productId);
+
+        return optionalProduct.get();
+    }
+
 
     public static Product getProductFromDTO(ProductDTO productDTO, Category category) {
         Product product = new Product();
