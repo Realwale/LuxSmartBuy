@@ -4,6 +4,7 @@ import com.charisplace.luxsmartbuy.config.ApiResponse;
 import com.charisplace.luxsmartbuy.dto.CheckoutItemDTO;
 import com.charisplace.luxsmartbuy.dto.StripeResponse;
 import com.charisplace.luxsmartbuy.exceptions.AuthenticationFailException;
+import com.charisplace.luxsmartbuy.exceptions.OrderNotFoundException;
 import com.charisplace.luxsmartbuy.model.Order;
 import com.charisplace.luxsmartbuy.model.User;
 import com.charisplace.luxsmartbuy.service.AuthenticationService;
@@ -61,7 +62,7 @@ public class OrderController {
         return new ResponseEntity<>(orderList, HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> getOrderById(@PathVariable("id") Long id, @RequestParam("token") String token) throws AuthenticationFailException {
+    public ResponseEntity<Object> getOrderById(@PathVariable("id") Long id, @RequestParam("token") String token) throws AuthenticationFailException, OrderNotFoundException {
 
 
         authenticationService.authenticate(token);
